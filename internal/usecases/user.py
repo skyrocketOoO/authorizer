@@ -3,14 +3,16 @@ from sqlalchemy.orm import Session
 from internal.sql.models import User
 from utils import hash
 from utils.auth import jwt
+from utils import error
+
 import logging
+
 
 def register(db: Session, email: str, password: str, name: str):
     user = user_crud.get_user_by_email(db, email)
     if user:
-        raise "Email already registered"
+        raise error.EmailAlreadyRegisteredError()
     user_crud.create_user(db, email, hash.hash_password(password), name)
-    
     
 def login(db: Session, email: str, password: str) -> str | None:
     db_user = user_crud.get_user_by_email(db, email)
@@ -41,23 +43,22 @@ def logout(db: Session):
 def update_user(db: Session, token: str, name: str):
     user = get_current_user(db, token)
     if user is None:
-        raise "user not found"
-    
+        raise error.UserNotFoundError()
     user_crud.update_user(db, user.id, name)
     
 def delete_user(db: Session, token: str):
     user = get_current_user(db, token)
+    if user is None:
+        raise error.UserNotFoundError()
     user_crud.delete_user(db, user.id)
 
 def change_password(db: Session, token: str, old_password: str, new_password: str):
     user = get_current_user(db, token)
-    # Add logic to check old password and update the password securely
     if user is None:
-        raise "user not found"
+        raise error.UserNotFoundError()
     if user.hashed_password != hash.hash_password(old_password):
-        raise "Password not correct"
+        raise error.PasswordIncorrectError()
     user.hashed_password = hash.hash_password(new_password)
-    db.commit()
-    db.refresh(user)
+    user_crud.update_user(db, user.id, user.name, user.hashed_password)
 
 

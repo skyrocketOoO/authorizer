@@ -23,10 +23,12 @@ def create_user(db: Session, email: str, hashed_password: str, name: str) -> Use
     db.refresh(db_user)
     return db_user
 
-def update_user(db: Session, id: int, name: str) -> User | None:
+def update_user(db: Session, id: int, name: str, password: str = None) -> User | None:
     db_user = get_user(db, id)
     if name != "":
         db_user.name = name
+    if password != None:
+        db_user.hashed_password = password
     db.commit()
     db.refresh(db_user)
     return db_user
