@@ -1,50 +1,63 @@
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 
-const BASE_URL = 'http://localhost:8000/selfuser'; // Replace with your actual API base URL
+const BASE_URL = 'http://localhost:8000'; // Replace with your actual API base URL
+const SELFUSER_URL = BASE_URL + "/selfuser";
 
 export const options = {
-  stages: [
-    { duration: '10s', target: 10 }, // Simulate ramp-up of traffic from 1 to 10 users over 10 seconds
-    { duration: '1m', target: 10 },  // Stay at 10 users for 1 minute
-    { duration: '10s', target: 0 },  // Ramp-down to 0 users
-  ],
 };
 
-// Function to generate a random email address for testing
-function generateRandomEmail() {
-  return `testuser${Math.floor(Math.random() * 100000)}@example.com`;
-}
-
 export default function () {
-  // Test registration endpoint
-  const registrationPayload = {
-    email: generateRandomEmail(),
-    password: 'testpassword',
-    name: 'Test User',
-  };
-  const registrationResponse = http.post(`${BASE_URL}/register`, registrationPayload);
-  check(registrationResponse, { 'Registration successful': (r) => r.status === 200 });
+    const headers = {
+        'Content-Type': 'application/json',
+    }
 
-  // Test login endpoint
-  const loginPayload = {
-    email: registrationPayload.email,
-    password: registrationPayload.password,
-  };
-  const loginResponse = http.post(`${BASE_URL}/login`, loginPayload);
-  check(loginResponse, { 'Login successful': (r) => r.status === 200 });
+    // register
+    const registrationPayload = {
+        email: 'test@gmail.com',
+        password: 'test',
+        name: 'test',
+    };
+    const registrationResponse = http.post(`${SELFUSER_URL}/register`, JSON.stringify(registrationPayload), {
+        headers: headers
+    });
+    check(registrationResponse, { 'Registration successful': (r) => r.status === 200 });
 
-  // Extract token from login response
-  const authToken = loginResponse.json('token');
+    // login
+    const loginPayload = {
+        email: registrationPayload.email,
+        password: registrationPayload.password,
+    };
+    const loginResponse = http.post(`${SELFUSER_URL}/login`, JSON.stringify(loginPayload), {
+        headers: headers
+    });
+    check(loginResponse, { 'Login successful': (r) => r.status === 200 });
 
-  // Test protected endpoints using the obtained token
-  const profileResponse = http.get(`${BASE_URL}/profile`, {
-    headers: {
-      Authorization: `Bearer ${authToken}`,
-    },
-  });
-  check(profileResponse, { 'Profile request successful': (r) => r.status === 200 });
+    // Extract token from login response
+    const authToken = loginResponse.json('token');
 
-  // Sleep for a short duration before the next iteration
-  sleep(1);
+    // get current user
+    const profileHeaders = Object.assign({}, headers, {
+        Authorization: `Bearer ${authToken}`,
+    })
+    const profileResponse = http.get(`${SELFUSER_URL}`, {
+        headers: profileHeaders
+    });
+    check(profileResponse, { 'Profile request successful': (r) => r.status === 200 });
+
+    // Update
+    const updatePayload = {
+        name: "test1",
+    };
+    const updateResp = http.put(`${SELFUSER_URL}`, JSON.stringify(updatePayload), {
+        headers: profileHeaders
+    });
+    check(updateResp, { 'Update request successful': (r) => r.status === 200 });
+
+    // Delete
+    const deleteResp = http.del(`${SELFUSER_URL}`, null, {
+        headers: profileHeaders
+    });
+    check(deleteResp, { 'Delete request successful': (r) => r.status === 200 });
+    sleep(1);
 }
