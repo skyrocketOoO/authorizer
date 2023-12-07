@@ -92,5 +92,5 @@ def reset_password(db: Session, token: str, new_password: str):
     user_crud.update_user(db, user.id, user.name, hashed_password)
     
 
-def email_verification():
+def email_verify():
     pass
