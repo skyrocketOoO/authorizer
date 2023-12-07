@@ -4,6 +4,8 @@ from internal.sql.models import User
 from utils import hash
 from utils.auth import jwt
 from utils import error
+from utils import email as email_util
+from utils import token as token_util
 
 import logging
 
@@ -61,4 +63,25 @@ def change_password(db: Session, token: str, old_password: str, new_password: st
     user.hashed_password = hash.hash_password(new_password)
     user_crud.update_user(db, user.id, user.name, user.hashed_password)
 
+def is_token_valid(token: str):
+    user_id = token_util.verify_reset_token(token)
+    return user_id is not None
 
+def forget_password(db: Session, email: str):
+    user = user_crud.get_user_by_email(db, email)
+    if user is None:
+        raise error.UserNotFoundError()
+    
+    reset_token = token_util.initiate_password_reset(user.id)
+    
+    
+    email_util.send_email()
+
+
+def reset_password(db: Session, token: str, new_password: str):
+    pass
+    
+    
+
+def email_verification():
+    pass

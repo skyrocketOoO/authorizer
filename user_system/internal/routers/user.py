@@ -76,3 +76,9 @@ def change_password(change_password_req: ChangePasswordReq, token: annotated_bea
         raise HTTPException(status_code=404, detail=e.message)
     except error.PasswordIncorrectError as e:    
         raise HTTPException(status_code=400, detail=e.message)
+    
+    
+@router.post("/is_token_valid")
+def is_token_valid(token: str = ""):
+    return True
+    return user_usecase.is_token_valid(token)
