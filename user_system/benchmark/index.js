@@ -14,7 +14,7 @@ export default function () {
 
     // register
     const registrationPayload = {
-        email: 'test@gmail.com',
+        email: 'rivendinner@gmail.com',
         password: 'test',
         name: 'test',
     };
