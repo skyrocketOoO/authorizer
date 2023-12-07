@@ -8,7 +8,8 @@ const ResetPasswordPage = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [resetStatus, setResetStatus] = useState(null);
-  const [isValid, setIsValid] = useState(true);  // Added state to track validity
+  const [isValid, setIsValid] = useState(true);
+  const [passwordsMatch, setPasswordsMatch] = useState(true);
 
   const isValidToken = async () => {
     const token = getResetTokenFromUrl();
@@ -22,10 +23,14 @@ const ResetPasswordPage = () => {
   };
 
   const handleResetPassword = async () => {
+    if (!passwordsMatch) {
+      return;  // Prevent further execution if passwords don't match
+    }
+
     const token = getResetTokenFromUrl();
     try {
       const response = await axios.post(`${sp_server_url}/reset_password?token=${token}`, {
-        newPassword,
+        "new_password": newPassword,
       });
       setResetStatus('Password reset successful');
     } catch (error) {
@@ -41,7 +46,7 @@ const ResetPasswordPage = () => {
   useEffect(() => {
     const checkTokenValidity = async () => {
       const isValid = await isValidToken();
-      setIsValid(isValid);  // Update the state with the result
+      setIsValid(isValid);
       if (!isValid) {
         setResetStatus('Invalid or expired token. Page not found.');
       }
@@ -49,6 +54,11 @@ const ResetPasswordPage = () => {
 
     checkTokenValidity();
   }, []);
+
+  useEffect(() => {
+    // Check if passwords match whenever newPassword or confirmPassword changes
+    setPasswordsMatch(newPassword === confirmPassword);
+  }, [newPassword, confirmPassword]);
 
   return (
     <div>
@@ -69,7 +79,9 @@ const ResetPasswordPage = () => {
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
+              style={{ border: passwordsMatch ? '1px solid #ccc' : '1px solid red' }}
             />
+            {!passwordsMatch && <p style={{ color: 'red' }}>Passwords do not match</p>}
           </div>
           <button onClick={handleResetPassword}>Reset Password</button>
         </>

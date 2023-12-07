@@ -77,8 +77,27 @@ def change_password(change_password_req: ChangePasswordReq, token: annotated_bea
     except error.PasswordIncorrectError as e:    
         raise HTTPException(status_code=400, detail=e.message)
     
-    
 @router.post("/is_token_valid")
 def is_token_valid(token: str = ""):
-    return True
+    # return True
     return user_usecase.is_token_valid(token)
+
+class ForgetPasswordReq(BaseModel):
+    email: str
+
+@router.post("/forget_password")
+def forget_password(forget_password_req: ForgetPasswordReq, db: Session = Depends(get_db)):
+    try:
+        user_usecase.forget_password(db, forget_password_req.email)
+    except error.UserNotFoundError as e:
+        raise HTTPException(status_code=404, detail=e.message)
+    
+class ResetPasswordReq(BaseModel):
+    new_password: str
+
+@router.post("/reset_password")
+def reset_password(reset_password_req: ResetPasswordReq, token: str = "", db: Session = Depends(get_db)):
+    try:
+        user_usecase.reset_password(db, token, reset_password_req.new_password)
+    except error.UserNotFoundError as e:
+        raise HTTPException(status_code=404, detail=e.message)
