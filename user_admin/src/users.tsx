@@ -31,10 +31,10 @@ export const UserShow = () => (
 export const UserEdit = () => (
     <Edit>
         <SimpleForm>
-            <TextInput source="id" />
+            <TextInput source="id" InputProps={{ disabled: true }} />
             <TextInput source="name" />
             <TextInput source="email" />
-            <TextInput source="hashed_password" />
+            <TextInput source="hashed_password" InputProps={{ disabled: true }} />
         </SimpleForm>
     </Edit>
 );

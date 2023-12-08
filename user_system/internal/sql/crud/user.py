@@ -2,9 +2,33 @@ from sqlalchemy.orm import Session
 from ..models import User
 from typing import List
 
-#TODO: don't return password
-def list_users(db: Session) -> List[User]:
-    return db.query(User).all()
+
+def get_users(
+    db: Session,
+    _start: int,
+    _end: int,
+    _sort: str,
+    _order: str,
+    name: str,
+) -> List[User]:
+    # Construct your query based on the provided parameters
+    query = db.query(User)
+
+    # Apply filters
+    if name:
+        query = query.filter(User.name == name)
+
+    # Sort the results
+    query = query.order_by(getattr(User, _sort))
+
+    # Apply sorting order
+    if _order == "DESC":
+        query = query.reverse()
+
+    # Apply pagination
+    users = query.offset(_start).limit(_end - _start).all()
+
+    return users
 
 def get_user_by_email(db: Session, email: str) -> User | None:
     return db.query(User).filter(User.email == email).first()

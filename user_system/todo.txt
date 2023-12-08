@@ -1,1 +1,3 @@
 - email verify
+- don't return password
+- admin page can edit user password
