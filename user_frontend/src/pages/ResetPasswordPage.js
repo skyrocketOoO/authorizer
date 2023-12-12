@@ -61,35 +61,81 @@ const ResetPasswordPage = () => {
   }, [newPassword, confirmPassword]);
 
   return (
-    <div>
+    <div style={styles.body}>
       {isValid ? (
-        <>
+        <div style={styles.block}>
           <h2>Reset Password</h2>
-          <div>
-            <label>New Password:</label>
-            <input
-              type="password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-            />
-          </div>
-          <div>
-            <label>Confirm Password:</label>
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              style={{ border: passwordsMatch ? '1px solid #ccc' : '1px solid red' }}
-            />
-            {!passwordsMatch && <p style={{ color: 'red' }}>Passwords do not match</p>}
-          </div>
-          <button onClick={handleResetPassword}>Reset Password</button>
-        </>
+          <input
+            style={styles.input}
+            type="password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            placeholder='new password*'
+          />
+          <br></br>
+          <input
+            style={styles.input}
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder='confirm password*'
+          />
+          {!passwordsMatch && <p style={{ color: 'red' }}>Passwords do not match</p>}
+          <button style={styles.button} onClick={handleResetPassword}>Reset Password</button>
+        </div>
       ) : (
         <p>{resetStatus || 'Invalid or expired token. Page not found.'}</p>
       )}
     </div>
   );
+};
+
+const styles = {
+  body: {
+    background: 'linear-gradient(to bottom, #282c34, #555)',
+    fontFamily: 'Arial, sans-serif',
+    textAlign: 'center',
+    minHeight: '100vh',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+  },
+  block: {
+    backgroundColor: 'white',
+    padding: '20px',
+    borderRadius: '8px',
+    width: '300px',
+    minHeight: '300px',
+    textAlign: 'center',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    boxShadow: '0px 0px 10px 0px rgba(0,0,0,0.2)', // Added a subtle box shadow
+  },
+  heading: {
+    color: '#333', // Dark gray text color
+    // textShadow: '1px 1px blue'
+  },
+  input: {
+    width: '100%',
+    padding: '10px',
+    margin: '8px 0',
+    boxSizing: 'border-box',
+    borderRadius: '4px',
+    border: '1px solid #ccc',
+  },
+  button: {
+    backgroundColor: '#4caf50', // Green button color
+    color: 'white',
+    padding: '10px 15px',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
+  },
+  link: {
+    textDecoration: 'none',
+    color: '#2196F3', // Blue link color
+    margin: '0 10px',
+  },
 };
 
 export default ResetPasswordPage;

@@ -4,7 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 
 
 const Login = () => {
-  const config = require('./config');
+  const config = require('../config');
   const selfuser_url = `${config.SP_BACKEND_URL}/selfuser`
   const [email, setemail] = useState('');
   const [password, setPassword] = useState('');

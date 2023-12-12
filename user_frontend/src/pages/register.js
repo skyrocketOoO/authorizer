@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 
 const Register = () =>{
-    const config = require('./config');
+    const config = require('../config');
     const selfuser_url = `${config.SP_BACKEND_URL}/selfuser`
 
     const [email, setEmail] = useState("");

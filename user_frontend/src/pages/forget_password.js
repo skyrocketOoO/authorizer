@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 const ForgetPassword = () =>{
     const [email, setEmail] = useState('');
     const [send_status, setSend_status] = useState('');
-    const config = require('./config');
+    const config = require('../config');
     const selfuser_url = `${config.SP_BACKEND_URL}/selfuser`
   
     const send_reset_email = async () =>{

@@ -71,7 +71,7 @@ def forget_password(db: Session, email: str):
         raise error.UserNotFoundError()
     
     reset_token = token_util.initiate_password_reset(user.id)
-    body = f"http://localhost:3000?token={reset_token}"
+    body = f"http://localhost:3000/reset_password?token={reset_token}"
     
     email_util.send_email("reset password", body, email)
     return "Reset url is pass to the mail with 1 hour expiration"
